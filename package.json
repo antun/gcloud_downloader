@@ -1,0 +1,9 @@
+{ 
+    "name": "gcloud-downloader",
+    "description": "Tool for downloading GCloud images",
+    "version": "0.0.1",
+    "devDependencies": {
+        "node-curl": "~0.3.3"
+    },
+    "main": "downloader.js"
+}
