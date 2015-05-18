@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 
 var fs = require('fs');
+var path = require('path');
 
 
 var url = 'https://www.gcloudbackup.com/Account/DownloadFile.aspx?DownloadFile=1';
 var cookie = 'Cookie: SelectedDevice=YRazyERLnvi3Z9s+qWLbWA==; __qca=P0-515159503-1430955355924; ASP.NET_SessionId=ordq1qsx5maozraz3bynooxg; isZoolzAdds=true; AWSELB=A1C1DD591205A4900B8319AF804A86196F0DC7EE3633376EF3DF53953ECD23D861C699E95F32E7FC7A808B99F9A8D41C885F9B2F8B0F44A9FA218A0A9130624EC9E5D8245E; Client=mN1d1oZ12y0yz/tRvZO/iSPVW/re13Wc2f/LODmVjsFa0Sa4q7hhFT466YeOuV5RHKcEEquHtg08ToUymOiJRFwoke3ar9WNW495jkfihIYKfapkmbsY4z0CRlaTqF5FZFvXH7X7daU=; __ar_v4=PCUUGZ627RFV7LBA55V5WR%3A20150505%3A6%7CWWYHRJMLDNFC3AQRJJKVZZ%3A20150505%3A6%7CYDWN2TZA2NDEPB4RS76UFD%3A20150505%3A6; __utma=235770263.370774561.1430834446.1431974438.1431987188.9; __utmb=235770263.2.10.1431987189; __utmc=235770263; __utmz=235770263.1430834446.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); FilePath=njkBR/l52Z+ph/Pg5Y9i1seaLDechTQQEXY6+3xCnoCo/0fGJPnNbKRAW7+2BP28GMAUlj8xK/k=';
 
-var downloadLocation = '~/Downloads/gclouddownload';
+var downloadLocation = '/Users/akarlovac/Downloads/gclouddownload';
 
 
 /*
@@ -34,11 +35,30 @@ function buildFormDataFromLine(line) {
     return formData;
 }
 
+function mkdirP(path) {
+    var bits = path.split('/');
+    if (bits[0] == '') {
+        bits.shift();
+    }
+    for (var i=0; i<=bits.length; i++) {
+        var newBits = bits.slice(0,i); 
+        var newPath = '/' + newBits.join('/');
+        if (!fs.existsSync(newPath)) {
+            fs.mkdirSync(newPath);
+        } else{
+            continue;
+        }
+    }
+}
+
 function outputFilePath(line) {
     var rawFilePath = line.FilePath; // /path/to/file20150511_094716.jpg*M1431362836000*S4266120
+    var dirName = downloadLocation + '/' + path.dirname(rawFilePath);
+    if (!fs.existsSync(dirName)) {
+        mkdirP(dirName);
+    }
     var fileName = line.FileName;
-    // TODO: This needs to be sorted.
-    return downloadLocation + '/' + fileName;
+    return dirName + '/' + fileName;
 }
 
 function processJSONFile(jsonFile) {
