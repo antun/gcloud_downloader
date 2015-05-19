@@ -2,10 +2,11 @@
 
 var fs = require('fs');
 var path = require('path');
+var child_process = require('child_process');
 
 
 var url = 'https://www.gcloudbackup.com/Account/DownloadFile.aspx?DownloadFile=1';
-var cookie = 'Cookie: SelectedDevice=YRazyERLnvi3Z9s+qWLbWA==; __qca=P0-515159503-1430955355924; ASP.NET_SessionId=ordq1qsx5maozraz3bynooxg; isZoolzAdds=true; AWSELB=A1C1DD591205A4900B8319AF804A86196F0DC7EE3633376EF3DF53953ECD23D861C699E95F32E7FC7A808B99F9A8D41C885F9B2F8B0F44A9FA218A0A9130624EC9E5D8245E; Client=mN1d1oZ12y0yz/tRvZO/iSPVW/re13Wc2f/LODmVjsFa0Sa4q7hhFT466YeOuV5RHKcEEquHtg08ToUymOiJRFwoke3ar9WNW495jkfihIYKfapkmbsY4z0CRlaTqF5FZFvXH7X7daU=; __ar_v4=PCUUGZ627RFV7LBA55V5WR%3A20150505%3A6%7CWWYHRJMLDNFC3AQRJJKVZZ%3A20150505%3A6%7CYDWN2TZA2NDEPB4RS76UFD%3A20150505%3A6; __utma=235770263.370774561.1430834446.1431974438.1431987188.9; __utmb=235770263.2.10.1431987189; __utmc=235770263; __utmz=235770263.1430834446.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); FilePath=njkBR/l52Z+ph/Pg5Y9i1seaLDechTQQEXY6+3xCnoCo/0fGJPnNbKRAW7+2BP28GMAUlj8xK/k=';
+var cookie = 'Cookie: SelectedDevice=YRazyERLnvi3Z9s+qWLbWA==; __qca=P0-515159503-1430955355924; ASP.NET_SessionId=ordq1qsx5maozraz3bynooxg; isZoolzAdds=true; AWSELB=A1C1DD591205A4900B8319AF804A86196F0DC7EE3633376EF3DF53953ECD23D861C699E95F32E7FC7A808B99F9A8D41C885F9B2F8B0F44A9FA218A0A9130624EC9E5D8245E; __ar_v4=YDWN2TZA2NDEPB4RS76UFD%3A20150505%3A7%7CWWYHRJMLDNFC3AQRJJKVZZ%3A20150505%3A7%7CPCUUGZ627RFV7LBA55V5WR%3A20150505%3A7; Client=mN1d1oZ12y0yz/tRvZO/iSPVW/re13Wc2f/LODmVjsFa0Sa4q7hhFT466YeOuV5RHKcEEquHtg08ToUymOiJRFwoke3ar9WNW495jkfihIYKfapkmbsY4z0CRlaTqF5FZFvXH7X7daU=; __utma=235770263.370774561.1430834446.1431987188.1431993962.10; __utmb=235770263.2.10.1431993964; __utmc=235770263; __utmz=235770263.1430834446.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); FilePath=njkBR/l52Z+ph/Pg5Y9i1seaLDechTQQEXY6+3xCnoCo/0fGJPnNbKRAW7+2BP28GMAUlj8xK/k=';
 
 var downloadLocation = '/Users/akarlovac/Downloads/gclouddownload';
 
@@ -63,13 +64,14 @@ function outputFilePath(line) {
 
 function processJSONFile(jsonFile) {
     var obj = JSON.parse(fs.readFileSync('img.json', 'utf8'));
-    for (var i=0; i<1; i++) {
+    for (var i=0; i<obj.length; i++) {
         var line = obj[i];
         var formData = buildFormDataFromLine(line);
         var out = outputFilePath(line);
         if (!fs.existsSync(out)) {
-            var command = "curl '" + url + "' -H '"+cookie+"' -H 'Origin: https://www.gcloudbackup.com' -H 'Accept-Encoding: gzip, deflate' -H 'Accept-Language: en-US,en;q=0.8' -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36' -H 'Content-Type: application/x-www-form-urlencoded' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8' -H 'Cache-Control: max-age=0' -H 'Referer: https://www.gcloudbackup.com/Account/MyDevices' -H 'Connection: keep-alive' --data '" + formData + "' --compressed -o " + out;
-            console.log(command);
+            var command = "curl '" + url + "' -H '"+cookie+"' -H 'Origin: https://www.gcloudbackup.com' -H 'Accept-Encoding: gzip, deflate' -H 'Accept-Language: en-US,en;q=0.8' -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36' -H 'Content-Type: application/x-www-form-urlencoded' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8' -H 'Cache-Control: max-age=0' -H 'Referer: https://www.gcloudbackup.com/Account/MyDevices' -H 'Connection: keep-alive' --data '" + formData + "' --compressed -o '" + out + "'";
+            // console.log(command);
+            child_process.execSync(command);
         } else {
             // File exists, so skip
         }
